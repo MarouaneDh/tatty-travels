@@ -48,7 +48,11 @@
  *          - Enjoy local cuisine
  *         bestTime: Summer
  *         featured: true
- *         mainPicture: https://example.com/santorini.jpg
+ *         mainPicture: 67f62d706a4bb602926282e6
+ *         images:
+ *          - 67f62d706a4bb602926282e6
+ *          - 67f62d706a4bb602926282e6
+ *          - 67f62d706a4bb602926282e6
  *  
  */
 

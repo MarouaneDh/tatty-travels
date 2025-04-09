@@ -6,6 +6,7 @@ const swagger = require('./swagger');
 
 const userRouter = require("./routes/users");
 const destinationRouter = require("./routes/destinations");
+const uploadRouter = require("./routes/images");
 const authRouter = require("./routes/auth");
 
 const PORT = process.env.PORT || 3000;
@@ -30,4 +31,6 @@ app.use(express.json());
 
 app.use("/api/user", userRouter);
 app.use("/api/destination", destinationRouter);
+app.use("/api/upload", uploadRouter);
+
 app.use("/api/auth", authRouter);
