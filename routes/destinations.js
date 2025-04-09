@@ -5,183 +5,160 @@
  *     Destination:
  *       type: object
  *       required:
- *         - listCategory
- *         - listName
- *         - couple
+ *         - title
+ *         - country
+ *         - city
+ *         - description
+ *         - toDo
+ *         - featured
+ *         - mainPicture
  *       properties:
  *         _id:
  *           type: string
- *           description: The auto-generated id of the list
- *         listCategory:
+ *           description: The auto-generated id of the destination
+ *         title:
  *           type: string
- *           description: The category of your list
- *         listName:
+ *           description: Title of the destination
+ *         country:
  *           type: string
- *           description: The list name
- *         list:
+ *           description: The destination country
+ *         city:
+ *           type: string
+ *           description: The destination city
+ *         description:
+ *           type: string
+ *           description: description of the destination
+ *         toDo:
  *           type: array
- *           description: The array of the actual list
- *       example:
- *         listCategory: bathroom
- *         listName: Bathroom
- *         list:
- *           - item: Towels
- *             isBought: true
- *             addedBy: 65bd076f828f42b463067bbf
- *             numberOfItems: 10
- *             numberOfItemsBought: 6
- *             imageURLs:
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *           - item: Bath robes
- *             isBought: false
- *             addedBy: 65bd076f828f42b463067bbf
- *             numberOfItems: 2
- *             numberOfItemsBought: 2
- *             imageURLs:
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *           - item: Bins for clothes
- *             isBought: false
- *             addedBy: 65bd076f828f42b463067bbf
- *             numberOfItems: 3
- *             numberOfItemsBought: 2
- *             imageURLs:
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *           - item: Plastic tubs
- *             isBought: false
- *             addedBy: 65bd076f828f42b463067bbf
- *             numberOfItems: 2
- *             numberOfItemsBought: 2
- *             imageURLs:
- *               - https://wedzing.adaptable.app/api/upload/666bf6ccbcaef4c07646ab0a
- *         couple:
- *           - 65bd076f828f42b463067bbf
- *           - 65bd075c828f42b463067bbc
- *     ListFilter:
- *       type: object
- *       properties:
- *         isBought:
+ *           description: list of things to do at the destination
+ *         featured:
  *           type: boolean
- *           description: value of isBought
+ *           description: is the destination featured or not
+ *         mainPicture:
+ *           type: string
+ *           description: The main picture of the destination 
  *       example:
- *         isBought: true
+ *         title: Santorini Sunsets
+ *         country: Greece
+ *         city: Santorini
+ *         description: A beautiful island in the Aegean Sea known for its stunning sunsets.
+ *         toDo:
+ *          - Visit the caldera
+ *          - Explore Oia
+ *          - Enjoy local cuisine
+ *         bestTime: Summer
+ *         featured: true
+ *         mainPicture: https://example.com/santorini.jpg
+ *  
  */
 
 /**
  * @swagger
  * tags:
- *   name: Lists
- *   description: The lists managing API
- * /api/list:
+ *   name: Destinations
+ *   description: The destinations managing API
+ * /api/destination:
  *   post:
- *     summary: Create a new list
- *     tags: [Lists]
+ *     summary: Create a new destination
+ *     tags: [Destinations]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/List'
+ *             $ref: '#/components/schemas/Destination'
  *     responses:
  *       200:
- *         description: The list was created.
+ *         description: The destination was created.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/List'
+ *               $ref: '#/components/schemas/Destination'
  *       500:
  *         description: Some server error
  *   get:
- *     summary: Get all lists
- *     tags: [Lists]
+ *     summary: Get all destinations
+ *     tags: [Destinations]
  *     responses:
  *       200:
- *         description: The list of lists.
+ *         description: The destination of destinations.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                  $ref: '#/components/schemas/List'
+ *                  $ref: '#/components/schemas/Destination'
  *       500:
  *         description: Some server error
- * /api/list/{id}:
- *   post:
- *     summary: Get one list
- *     tags: [Lists]
+ * /api/destination/{id}:
+ *   get:
+ *     summary: Get one destination
+ *     tags: [Destinations]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The list id
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ListFilter'
+ *         description: The destination id
  *     responses:
  *       200:
- *         description: The list of lists.
+ *         description: The list of destinations.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                  $ref: '#/components/schemas/List'
+ *                  $ref: '#/components/schemas/Destination'
  *       404:
- *        description: The list was not found
+ *        description: The destination was not found
  *       500:
  *         description: Some server error
  *   patch:
- *     summary: edit one list
- *     tags: [Lists]
+ *     summary: edit one destination
+ *     tags: [Destinations]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The list id
+ *         description: The destination id
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/List'
+ *             $ref: '#/components/schemas/Destination'
  *     responses:
  *       200:
- *         description: The list was updated.
+ *         description: The destination was updated.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               items:
- *                  $ref: '#/components/schemas/List'
+ *                  $ref: '#/components/schemas/Destination'
  *       404:
- *        description: The list was not found
+ *        description: The destination was not found
  *       500:
  *         description: Some server error
  *   delete:
- *     summary: Delete the list by id
- *     tags: [Lists]
+ *     summary: Delete the destination by id
+ *     tags: [Destinations]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The list id
+ *         description: The destination id
  *
  *     responses:
  *       200:
- *         description: The list was deleted
+ *         description: The destination was deleted
  *       404:
- *         description: The list was not found
+ *         description: The destination was not found
  *
  */
 
@@ -205,7 +182,7 @@ router.get("/", isAuth, getAllDestinations);
 // Getting destination by id
 // PATH: http://localhost:3000/api/destination/:id
 // Params id
-router.post("/:id", isAuth, getOneDestination);
+router.get("/:id", isAuth, getOneDestination);
 
 // PATCH
 // Updating a destination by id
