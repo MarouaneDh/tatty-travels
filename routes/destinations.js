@@ -169,7 +169,7 @@
 const express = require("express");
 const router = express.Router();
 const isAuth = require('../middlewares/isAuth');
-const { createDestination, getAllDestinations, getOneDestination, updateDestination, deleteDestination } = require("../controllers/destinatin.controller");
+const { createDestination, getAllDestinations, getOneDestination, updateDestination, deleteDestination } = require("../controllers/destination.controller");
 
 // POST
 // Destination posting
