@@ -27,8 +27,8 @@ const options = {
         ],
         servers: [
             {
-                // url: 'https://wedzing.adaptable.app',
-                url: 'http://localhost:3000',
+                url: 'https://tatty-travels.onrender.com',
+                // url: 'http://localhost:3000',
             },
         ],
     },
