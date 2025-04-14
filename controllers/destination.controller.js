@@ -11,8 +11,6 @@ const createDestination = async (req, res) => {
 };
 
 const getAllDestinations = async (req, res) => {
-    const token = req.headers.authorization.split(' ')[1];
-
     try {
 
         const result = await Destination.find()
@@ -26,6 +24,23 @@ const getAllDestinations = async (req, res) => {
     } catch (error) {
         console.log(error)
         res.status(400).send({ message: "Can't get destinations" });
+    }
+};
+
+const getFeaturedDestinations = async (req, res) => {
+    try {
+        const result = await Destination.find({ featured: true })
+            .select("-__v")
+            .sort({ createdAt: -1 })
+            .exec();
+
+        res.send({
+            response: result,
+            message: "Got featured destinations with success",
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "Can't get featured destinations" });
     }
 };
 
@@ -79,6 +94,7 @@ const deleteDestination = async (req, res) => {
 module.exports = {
     createDestination,
     getAllDestinations,
+    getFeaturedDestinations,
     getOneDestination,
     updateDestination,
     deleteDestination

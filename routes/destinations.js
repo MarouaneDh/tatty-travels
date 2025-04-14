@@ -107,7 +107,7 @@
  *         description: The destination id
  *     responses:
  *       200:
- *         description: The list of destinations.
+ *         description: One destination.
  *         content:
  *           application/json:
  *             schema:
@@ -163,13 +163,29 @@
  *         description: The destination was deleted
  *       404:
  *         description: The destination was not found
- *
+ * /api/destination/featured:
+ *   get:
+ *     summary: Get featured destinations
+ *     tags: [Destinations]
+ *     responses:
+ *       200:
+ *         description: The list of featured destinations.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                  $ref: '#/components/schemas/Destination'
+ *       404:
+ *        description: The featured destinations were not found
+ *       500:
+ *         description: Some server error
  */
 
 const express = require("express");
 const router = express.Router();
 const isAuth = require('../middlewares/isAuth');
-const { createDestination, getAllDestinations, getOneDestination, updateDestination, deleteDestination } = require("../controllers/destination.controller");
+const { createDestination, getAllDestinations, getOneDestination, updateDestination, deleteDestination, getFeaturedDestinations } = require("../controllers/destination.controller");
 
 // POST
 // Destination posting
@@ -181,6 +197,11 @@ router.post("/", isAuth, createDestination);
 // Getting all destinations
 // PATH: http://localhost:3000/api/destination/
 router.get("/", isAuth, getAllDestinations);
+
+// GET
+// Getting all destinations
+// PATH: http://localhost:3000/api/destination/
+router.get("/featured", isAuth, getFeaturedDestinations);
 
 // POST
 // Getting destination by id
