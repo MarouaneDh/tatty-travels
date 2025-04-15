@@ -113,17 +113,12 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const { uploadImage, getImage, getAllImages, uploadHeroImage, getHeroImage } = require("../controllers/image.controller");
+const { uploadImage, getImage, getAllImages, getHeroImage } = require("../controllers/image.controller");
 
 //POST
 //uploading image
 //PATH:http://localhost:3000/api/upload
 router.post("/", upload.single('file'), uploadImage);
-
-//POST
-//uploading/updating hero image
-//PATH:http://localhost:3000/api/upload/hero
-router.post("/hero", upload.single('file'), uploadHeroImage);
 
 //GET
 //getting hero image

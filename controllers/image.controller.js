@@ -1,65 +1,73 @@
 const Images = require('../models/Images');
-// const Destination = require('../models/Destination');
+const Destination = require('../models/Destination');
+const Story = require('../models/Story');
 
 const uploadImage = async (req, res) => {
     try {
         const { originalname, buffer, mimetype } = req.file;
-        // const { listId, itemId } = req.body;
+        const { assiciationId, imageType, isMain } = req.body;
 
         const image = new Images({
             filename: originalname,
             data: buffer,
             contentType: mimetype,
-            type: 'other'
+            type: imageType,
+            assiciatedTo: assiciationId,
+            isMain: isMain === 'true' // Convert to boolean
         });
 
         await image.save();
 
-        // Construct the image URL
-        // const imageUrl = `https://wedzing.adaptable.app/api/upload/${image._id}`;
+        if (imageType === 'story') {
+            const story = await Story.findById(assiciationId);
+            if (story) {
+                if (isMain === 'true') {
+                    story.mainPicture = image._id;
+                    await story.save();
+                } else {
+                    story.images.push(image._id);
+                    await story.save();
+                }
 
-        // // Update the specific list item with the image URL
-        // if (listId && itemId) {
-        //     const list = await Destination.findById(listId);
-        //     if (list) {
-        //         const item = list.list.id(itemId);
-        //         if (item) {
-        //             item.imageURLs.push(imageUrl);
-        //             await list.save();
-        //         }
-        //     }
-        // }
+            }
+        } else if (imageType === 'destination') {
+            const destination = await Destination.findById(assiciationId);
+            if (destination) {
+                if (isMain === 'true') {
+                    destination.mainPicture = image._id;
+                    await destination.save();
+                } else {
+                    destination.images.push(image._id);
+                    await destination.save();
+                }
+
+            }
+        } else if (imageType === 'hero') {
+            const existingHeroImage = await Images.findOne({ type: 'hero' });
+
+            if (existingHeroImage) {
+                existingHeroImage.filename = originalname;
+                existingHeroImage.data = buffer;
+                existingHeroImage.contentType = mimetype;
+                await existingHeroImage.save();
+                res.json({ message: 'Hero image replaced successfully', imageId: existingHeroImage._id });
+            } else {
+                const image = new Images({
+                    filename: originalname,
+                    data: buffer,
+                    contentType: mimetype,
+                    type: imageType,
+                    assiciatedTo: 'none',
+                    isMain: false
+                });
+                await image.save();
+                res.json({ message: 'Hero image uploaded successfully', imageId: image._id });
+            }
+        }
 
         res.json({ message: 'Image uploaded successfully', imageId: image._id });
     } catch (error) {
         res.status(500).json({ error: 'Failed to upload image', details: error.message });
-    }
-};
-
-const uploadHeroImage = async (req, res) => {
-    try {
-        const { originalname, buffer, mimetype } = req.file;
-
-        const existingHeroImage = await Images.findOne({ type: 'hero' });
-
-        if (existingHeroImage) {
-            existingHeroImage.filename = originalname;
-            existingHeroImage.data = buffer;
-            existingHeroImage.contentType = mimetype;
-            await existingHeroImage.save();
-            res.json({ message: 'Hero image replaced successfully', imageId: existingHeroImage._id });
-        } else {
-            const image = new Images({
-                filename: originalname,
-                data: buffer,
-                contentType: mimetype,
-                type: 'hero'
-            });
-            await image.save();
-            res.json({ message: 'Hero image uploaded successfully', imageId: image._id });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to upload/replace hero image', details: error.message });
     }
 };
 
@@ -136,7 +144,6 @@ const getAllImages = async (req, res) => {
 
 module.exports = {
     uploadImage,
-    uploadHeroImage,
     getImage,
     getHeroImage,
     getAllImages
