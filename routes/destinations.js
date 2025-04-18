@@ -196,18 +196,18 @@ router.post("/", isAuth, createDestination);
 // GET
 // Getting all destinations
 // PATH: http://localhost:3000/api/destination/
-router.get("/", isAuth, getAllDestinations);
+router.get("/", getAllDestinations);
 
 // GET
 // Getting all destinations
 // PATH: http://localhost:3000/api/destination/
-router.get("/featured", isAuth, getFeaturedDestinations);
+router.get("/featured", getFeaturedDestinations);
 
 // POST
 // Getting destination by id
 // PATH: http://localhost:3000/api/destination/:id
 // Params id
-router.get("/:id", isAuth, getOneDestination);
+router.get("/:id", getOneDestination);
 
 // PATCH
 // Updating a destination by id
