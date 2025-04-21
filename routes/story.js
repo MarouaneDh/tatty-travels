@@ -162,13 +162,13 @@ router.post("/", isAuth, createStory);
 // GET
 // Getting all storys
 // PATH: http://localhost:3000/api/story/
-router.get("/", isAuth, getAllStorys);
+router.get("/", getAllStorys);
 
 // POST
 // Getting story by id
 // PATH: http://localhost:3000/api/story/:id
 // Params id
-router.get("/:id", isAuth, getOneStory);
+router.get("/:id", getOneStory);
 
 // PATCH
 // Updating a story by id
