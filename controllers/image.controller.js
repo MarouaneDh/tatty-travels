@@ -1,6 +1,7 @@
 const Images = require('../models/Images');
 const Destination = require('../models/Destination');
 const Story = require('../models/Story');
+const { default: mongoose } = require('mongoose');
 
 const uploadImage = async (req, res) => {
     try {
@@ -102,45 +103,66 @@ const getHeroImage = async (req, res) => {
 }
 
 const getAllImages = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
-
     try {
-        const pageNumber = parseInt(page, 10);
-        const limitNumber = parseInt(limit, 10);
-
-        const skip = (pageNumber - 1) * limitNumber;
-
-        const images = await Images.find()
-            .skip(skip)
-            .limit(limitNumber);
+        const images = await Images.find();
+        const Destination = mongoose.model('Destination');
+        const Story = mongoose.model('Story'); // Assuming you have a Story model
 
         if (!images || images.length === 0) {
             return res.status(404).json({ error: 'Images not found' });
         }
 
-        const modifiedImages = images.map(image => {
-            const { _id, filename } = image;
+        const imagesWithDetails = await Promise.all(images.map(async image => {
+            const { _id, assiciatedTo, type } = image;
+            let detail = null;
+
+            if (assiciatedTo) {
+                if (type === 'destination') {
+                    detail = await Destination.findById(assiciatedTo);
+                } else if (type === 'story') {
+                    detail = await Story.findById(assiciatedTo);
+                }
+            }
+
             return {
                 _id,
-                filename,
+                assiciatedTo,
+                type,
+                city: detail ? detail.city : null,
+                country: detail ? detail.country : null,
                 imageUrl: `http://localhost:3000/api/upload/${_id}`
             };
-        });
+        }));
 
-        const totalImages = await Images.countDocuments();
-        const totalPages = Math.ceil(totalImages / limitNumber);
+        // Group images by country
+        const imagesByCountry = imagesWithDetails.reduce((acc, image) => {
+            if (image.country) {
+                if (!acc[image.country]) {
+                    acc[image.country] = [];
+                }
+                acc[image.country].push({
+                    _id: image._id,
+                    imageUrl: image.imageUrl,
+                    assiciatedTo: image.assiciatedTo,
+                    type: image.type,
+                    city: image.city,
+                });
+            }
+            return acc;
+        }, {});
 
-        res.json({
-            page: pageNumber,
-            limit: limitNumber,
-            totalImages,
-            totalPages,
-            images: modifiedImages
-        });
+        // Convert the grouped object into an array of objects
+        const result = Object.entries(imagesByCountry).map(([country, images]) => ({
+            country,
+            images
+        }));
+
+        res.json(result);
+
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch image', details: error.message });
+        res.status(500).json({ error: 'Failed to fetch and group images', details: error.message });
     }
-}
+};
 
 module.exports = {
     uploadImage,
