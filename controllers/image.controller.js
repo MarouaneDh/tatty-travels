@@ -130,7 +130,7 @@ const getAllImages = async (req, res) => {
                 type,
                 city: detail ? detail.city : null,
                 country: detail ? detail.country : null,
-                imageUrl: `http://localhost:3000/api/upload/${_id}`
+                imageUrl: `https://tatty-travels.onrender.com/api/upload/${_id}`
             };
         }));
 
