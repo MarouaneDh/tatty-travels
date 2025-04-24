@@ -164,9 +164,59 @@ const getAllImages = async (req, res) => {
     }
 };
 
+const deleteImage = async (req, res) => {
+    try {
+        const imageId = req.params.id;
+        const image = await Images.findById(imageId);
+
+        if (!image) {
+            return res.status(404).json({ message: 'Image not found' });
+        }
+
+        const { assiciatedTo, type, isMain } = image;
+
+        // Remove reference from associated model if it exists
+        if (assiciatedTo && mongoose.Types.ObjectId.isValid(assiciatedTo)) {
+            if (type === 'story') {
+                const story = await Story.findById(assiciatedTo);
+                if (story) {
+                    if (story.mainPicture === imageId) { // String comparison
+                        story.mainPicture = undefined;
+                        await story.save();
+                    } else {
+                        story.images = story.images.filter(imgId => imgId === imageId); // String comparison
+                        await story.save();
+                    }
+                }
+            } else if (type === 'destination') {
+                const destination = await Destination.findById(assiciationId); // Corrected variable name
+                if (destination) {
+                    if (destination.mainPicture === imageId) { // String comparison
+                        destination.mainPicture = undefined;
+                        await destination.save();
+                    } else {
+                        destination.images = destination.images.filter(imgId => imgId === imageId); // String comparison
+                        await destination.save();
+                    }
+                }
+            }
+        } else if (type === 'hero') {
+            // No associated model to update for hero images
+        }
+
+        // Delete the image document
+        await Images.findByIdAndDelete(imageId);
+
+        res.json({ message: 'Image deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete image', details: error.message });
+    }
+};
+
 module.exports = {
     uploadImage,
     getImage,
     getHeroImage,
-    getAllImages
+    getAllImages,
+    deleteImage
 }

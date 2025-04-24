@@ -113,7 +113,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const { uploadImage, getImage, getAllImages, getHeroImage } = require("../controllers/image.controller");
+const { uploadImage, getImage, getAllImages, getHeroImage, deleteImage } = require("../controllers/image.controller");
 
 //POST
 //uploading image
@@ -129,6 +129,11 @@ router.get('/get/hero', getHeroImage)
 //getting one image
 //PATH:http://localhost:3000/api/upload/:id
 router.get('/:id', getImage)
+
+//DELETE
+//delete one image
+//PATH:http://localhost:3000/api/upload
+router.delete('/:id', deleteImage)
 
 //GET
 //getting all images
