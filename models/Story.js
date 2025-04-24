@@ -21,11 +21,11 @@ const storySchema = new schema({
     },
     mainPicture: {
         type: String,
-        required: true,
+        required: false,
     },
     images: {
         type: [String],
-        required: true,
+        required: false,
     },
     created_at: { type: Date },
     updated_at: { type: Date }

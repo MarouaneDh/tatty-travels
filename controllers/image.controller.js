@@ -8,66 +8,66 @@ const uploadImage = async (req, res) => {
         const { originalname, buffer, mimetype } = req.file;
         const { assiciationId, imageType, isMain } = req.body;
 
-        const image = new Images({
-            filename: originalname,
-            data: buffer,
-            contentType: mimetype,
-            type: imageType,
-            assiciatedTo: assiciationId,
-            isMain: isMain === 'true' // Convert to boolean
-        });
-
-        await image.save();
-
-        if (imageType === 'story') {
-            const story = await Story.findById(assiciationId);
-            if (story) {
-                if (isMain === 'true') {
-                    story.mainPicture = image._id;
-                    await story.save();
-                } else {
-                    story.images.push(image._id);
-                    await story.save();
-                }
-
-            }
-        } else if (imageType === 'destination') {
-            const destination = await Destination.findById(assiciationId);
-            if (destination) {
-                if (isMain === 'true') {
-                    destination.mainPicture = image._id;
-                    await destination.save();
-                } else {
-                    destination.images.push(image._id);
-                    await destination.save();
-                }
-
-            }
-        } else if (imageType === 'hero') {
+        if (imageType === 'hero') {
             const existingHeroImage = await Images.findOne({ type: 'hero' });
 
             if (existingHeroImage) {
-                existingHeroImage.filename = originalname;
-                existingHeroImage.data = buffer;
-                existingHeroImage.contentType = mimetype;
-                await existingHeroImage.save();
-                res.json({ message: 'Hero image replaced successfully', imageId: existingHeroImage._id });
+                await Images.findByIdAndDelete(existingHeroImage._id);
+            }
+
+            const newHeroImage = new Images({
+                filename: originalname,
+                data: buffer,
+                contentType: mimetype,
+                type: 'hero',
+            });
+
+            await newHeroImage.save();
+            return res.json({ message: 'Hero image replaced successfully', imageId: newHeroImage._id });
+        } else {
+            // For 'story' and 'destination' types, we still need to create the image first
+            const image = new Images({
+                filename: originalname,
+                data: buffer,
+                contentType: mimetype,
+                type: imageType,
+                assiciatedTo: assiciationId,
+                isMain: isMain === 'true' // Convert to boolean
+            });
+
+            await image.save();
+
+            if (imageType === 'story') {
+                const story = await Story.findById(assiciationId);
+                if (story) {
+                    if (isMain === 'true') {
+                        story.mainPicture = image._id;
+                        await story.save();
+                    } else {
+                        story.images.push(image._id);
+                        await story.save();
+                    }
+                }
+                return res.json({ message: 'Story image uploaded successfully', imageId: image._id });
+            } else if (imageType === 'destination') {
+                const destination = await Destination.findById(assiciationId);
+                if (destination) {
+                    if (isMain === 'true') {
+                        destination.mainPicture = image._id;
+                        await destination.save();
+                    } else {
+                        destination.images.push(image._id);
+                        await destination.save();
+                    }
+                }
+                return res.json({ message: 'Destination image uploaded successfully', imageId: image._id });
             } else {
-                const image = new Images({
-                    filename: originalname,
-                    data: buffer,
-                    contentType: mimetype,
-                    type: imageType,
-                    assiciatedTo: 'none',
-                    isMain: false
-                });
-                await image.save();
-                res.json({ message: 'Hero image uploaded successfully', imageId: image._id });
+                // Handle cases where imageType is not 'hero', 'story', or 'destination'
+                return res.status(400).json({ error: 'Invalid imageType' });
             }
         }
-
-        res.json({ message: 'Image uploaded successfully', imageId: image._id });
     } catch (error) {
+        console.error('Error uploading image:', error);
         res.status(500).json({ error: 'Failed to upload image', details: error.message });
     }
 };
@@ -180,22 +180,22 @@ const deleteImage = async (req, res) => {
             if (type === 'story') {
                 const story = await Story.findById(assiciatedTo);
                 if (story) {
-                    if (story.mainPicture === imageId) { // String comparison
+                    if (story.mainPicture && story.mainPicture.equals(imageId)) {
                         story.mainPicture = undefined;
                         await story.save();
                     } else {
-                        story.images = story.images.filter(imgId => imgId === imageId); // String comparison
+                        story.images = story.images.filter(imgId => !imgId.equals(imageId));
                         await story.save();
                     }
                 }
             } else if (type === 'destination') {
-                const destination = await Destination.findById(assiciationId); // Corrected variable name
+                const destination = await Destination.findById(assiciatedTo);
                 if (destination) {
-                    if (destination.mainPicture === imageId) { // String comparison
+                    if (destination.mainPicture && destination.mainPicture.equals(imageId)) {
                         destination.mainPicture = undefined;
                         await destination.save();
                     } else {
-                        destination.images = destination.images.filter(imgId => imgId === imageId); // String comparison
+                        destination.images = destination.images.filter(imgId => !imgId.equals(imageId));
                         await destination.save();
                     }
                 }
