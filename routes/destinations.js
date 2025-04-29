@@ -193,14 +193,14 @@ const { createDestination, getAllDestinations, getOneDestination, updateDestinat
 // Params Body
 router.post("/", isAuth, createDestination);
 
-// GET
+// POST
 // Getting all destinations
-// PATH: http://localhost:3000/api/destination/
-router.get("/", getAllDestinations);
+// PATH: http://localhost:3000/api/destination/all
+router.post("/all", getAllDestinations);
 
 // GET
 // Getting all destinations
-// PATH: http://localhost:3000/api/destination/
+// PATH: http://localhost:3000/api/destination/featured
 router.get("/featured", getFeaturedDestinations);
 
 // POST

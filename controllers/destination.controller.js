@@ -12,15 +12,23 @@ const createDestination = async (req, res) => {
 
 const getAllDestinations = async (req, res) => {
     try {
-
-        const result = await Destination.find({ isLive: true })
-            .select("-__v")
-            .sort({ createdAt: -1 });
-
-        res.send({
-            response: result,
-            message: "Got all destinations with success",
-        });
+        if (req.body.token) {
+            const result = await Destination.find()
+                .select("-__v")
+                .sort({ createdAt: -1 });
+            res.send({
+                response: result,
+                message: "Got all destinations with success",
+            });
+        } else {
+            const result = await Destination.find({ isLive: true })
+                .select("-__v")
+                .sort({ createdAt: -1 });
+            res.send({
+                response: result,
+                message: "Got all destinations with success",
+            });
+        }
     } catch (error) {
         console.log(error)
         res.status(400).send({ message: "Can't get destinations" });

@@ -11,18 +11,27 @@ const createStory = async (req, res) => {
 };
 
 const getAllStorys = async (req, res) => {
-    const token = req.headers.authorization.split(' ')[1];
 
     try {
+        if (req.body.token) {
+            const result = await Story.find()
+                .select("-__v")
+                .sort({ createdAt: -1 });
 
-        const result = await Story.find({ isLive: true })
-            .select("-__v")
-            .sort({ createdAt: -1 });
+            res.send({
+                response: result,
+                message: "Got all story with success",
+            });
+        } else {
+            const result = await Story.find({ isLive: true })
+                .select("-__v")
+                .sort({ createdAt: -1 });
 
-        res.send({
-            response: result,
-            message: "Got all story with success",
-        });
+            res.send({
+                response: result,
+                message: "Got all story with success",
+            });
+        }
     } catch (error) {
         console.log(error)
         res.status(400).send({ message: "Can't get story" });

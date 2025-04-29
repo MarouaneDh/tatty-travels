@@ -159,10 +159,10 @@ const { createStory, getAllStorys, getOneStory, updateStory, deleteStory } = req
 // Params Body
 router.post("/", isAuth, createStory);
 
-// GET
+// POST
 // Getting all storys
-// PATH: http://localhost:3000/api/story/
-router.get("/", getAllStorys);
+// PATH: http://localhost:3000/api/story/all
+router.post("/all", getAllStorys);
 
 // POST
 // Getting story by id
