@@ -13,7 +13,7 @@ const createDestination = async (req, res) => {
 const getAllDestinations = async (req, res) => {
     try {
 
-        const result = await Destination.find()
+        const result = await Destination.find({ isLive: true })
             .select("-__v")
             .sort({ createdAt: -1 });
 
@@ -29,7 +29,7 @@ const getAllDestinations = async (req, res) => {
 
 const getFeaturedDestinations = async (req, res) => {
     try {
-        const result = await Destination.find({ featured: true })
+        const result = await Destination.find({ featured: true, isLive: true })
             .select("-__v")
             .sort({ createdAt: -1 })
             .exec();

@@ -27,6 +27,10 @@ const storySchema = new schema({
         type: [String],
         required: false,
     },
+    isLive: {
+        type: Boolean,
+        required: false,
+    },
     created_at: { type: Date },
     updated_at: { type: Date }
 }, { timestamps: true });
