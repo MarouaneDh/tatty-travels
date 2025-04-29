@@ -17,7 +17,7 @@ const getAllStorys = async (req, res) => {
 
         const result = await Story.find({ isLive: true })
             .select("-__v")
-            .sort({ createdAt: -1 });
+        // .sort({ createdAt: -1 });
 
         res.send({
             response: result,
