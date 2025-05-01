@@ -180,28 +180,26 @@ const deleteImage = async (req, res) => {
             if (type === 'story') {
                 const story = await Story.findById(assiciatedTo);
                 if (story) {
-                    if (story.mainPicture && story.mainPicture.equals(imageId)) {
+                    if (story.mainPicture === imageId) {
                         story.mainPicture = undefined;
                         await story.save();
                     } else {
-                        story.images = story.images.filter(imgId => !imgId.equals(imageId));
+                        story.images = story.images.filter(imgId => imgId !== imageId);
                         await story.save();
                     }
                 }
             } else if (type === 'destination') {
                 const destination = await Destination.findById(assiciatedTo);
                 if (destination) {
-                    if (destination.mainPicture && destination.mainPicture.equals(imageId)) {
+                    if (destination.mainPicture === imageId) {
                         destination.mainPicture = undefined;
                         await destination.save();
                     } else {
-                        destination.images = destination.images.filter(imgId => !imgId.equals(imageId));
+                        destination.images = destination.images.filter(imgId => imgId !== imageId);
                         await destination.save();
                     }
                 }
             }
-        } else if (type === 'hero') {
-            // No associated model to update for hero images
         }
 
         // Delete the image document
