@@ -1,4 +1,5 @@
 const Destination = require('../models/Destination')
+const Images = require('../models/Images');
 
 const createDestination = async (req, res) => {
     try {
@@ -85,17 +86,43 @@ const updateDestination = async (req, res) => {
 };
 
 const deleteDestination = async (req, res) => {
-    const _id = req.params.id
+    const _id = req.params.id;
 
     try {
+        const destination = await Destination.findById(_id);
+
+        if (!destination) {
+            return res.status(404).send({ message: "There is no destination with this ID" });
+        }
+
+        const imageIdsToDelete = [];
+
+        // Add main picture ID to the deletion list if it exists
+        if (destination.mainPicture) {
+            imageIdsToDelete.push(destination.mainPicture);
+        }
+
+        // Add all image IDs from the images array to the deletion list if it exists and has elements
+        if (destination.images && destination.images.length > 0) {
+            imageIdsToDelete.push(...destination.images);
+        }
+
+        // Delete the associated images from the Images collection
+        if (imageIdsToDelete.length > 0) {
+            await Images.deleteMany({ _id: { $in: imageIdsToDelete } });
+            console.log(`Deleted ${imageIdsToDelete.length} associated images.`);
+        }
+
+        // Finally, delete the destination document from the database
         const result = await Destination.deleteOne({ _id });
 
         result.deletedCount === 1
-            ? res.status(200).send({ message: "Destination was deleted successfully" })
-            : res.status(404).send({ message: "There is no destination with this ID" })
+            ? res.status(200).send({ message: "Destination and associated images were deleted successfully" })
+            : res.status(404).send({ message: "There is no destination with this ID" });
 
     } catch (error) {
-        res.send("Destination wasn't deleted");
+        console.error("Error deleting destination:", error);
+        res.status(500).send({ message: "Destination wasn't deleted due to an error" });
     }
 };
 
