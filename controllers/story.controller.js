@@ -71,17 +71,43 @@ const updateStory = async (req, res) => {
 };
 
 const deleteStory = async (req, res) => {
-    const _id = req.params.id
+    const _id = req.params.id;
 
     try {
+        const story = await Story.findById(_id);
+
+        if (!story) {
+            return res.status(404).send({ message: "There is no story with this ID" });
+        }
+
+        const imageIdsToDelete = [];
+
+        // Add main picture ID to the deletion list if it exists
+        if (story.mainPicture) {
+            imageIdsToDelete.push(story.mainPicture);
+        }
+
+        // Add all image IDs from the images array to the deletion list if it exists and has elements
+        if (story.images && story.images.length > 0) {
+            imageIdsToDelete.push(...story.images);
+        }
+
+        // Delete the associated images from the Images collection
+        if (imageIdsToDelete.length > 0) {
+            await Images.deleteMany({ _id: { $in: imageIdsToDelete } });
+            console.log(`Deleted ${imageIdsToDelete.length} associated images for story.`);
+        }
+
+        // Finally, delete the story document from the database
         const result = await Story.deleteOne({ _id });
 
         result.deletedCount === 1
-            ? res.status(200).send({ message: "Story was deleted successfully" })
-            : res.status(404).send({ message: "There is no story with this ID" })
+            ? res.status(200).send({ message: "Story and associated images were deleted successfully" })
+            : res.status(404).send({ message: "There is no story with this ID" });
 
     } catch (error) {
-        res.send("Story wasn't deleted");
+        console.error("Error deleting story:", error);
+        res.status(500).send({ message: "Story wasn't deleted due to an error" });
     }
 };
 
