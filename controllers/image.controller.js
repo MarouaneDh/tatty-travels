@@ -39,6 +39,11 @@ const uploadImage = async (req, res) => {
 
             if (imageType === 'story') {
                 const story = await Story.findById(assiciationId);
+
+                if (isMain === 'true' && story.mainPicture !== '') {
+                    await Images.deleteOne({ _id: story.mainPicture });
+                }
+
                 if (story) {
                     if (isMain === 'true') {
                         story.mainPicture = image._id;
@@ -51,6 +56,10 @@ const uploadImage = async (req, res) => {
                 return res.json({ message: 'Story image uploaded successfully', imageId: image._id });
             } else if (imageType === 'destination') {
                 const destination = await Destination.findById(assiciationId);
+
+                if (isMain === 'true' && destination.mainPicture !== '') {
+                    await Images.deleteOne({ _id: destination.mainPicture });
+                }
                 if (destination) {
                     if (isMain === 'true') {
                         destination.mainPicture = image._id;
