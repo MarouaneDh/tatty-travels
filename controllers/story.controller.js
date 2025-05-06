@@ -1,4 +1,5 @@
 const Story = require('../models/Story')
+const Images = require('../models/Images');
 
 const createStory = async (req, res) => {
     try {
